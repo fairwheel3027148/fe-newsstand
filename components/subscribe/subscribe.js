@@ -1,13 +1,6 @@
-import { showCancelmodal, showsubmodal } from "./subAlarm.js";
+import { showCancelModal, showSubModal } from "./subalarm.js";
 import subscribeManager from "../statemanager/subscribeManager.js";
 import { mytabs } from "../newstab/newstab.js";
-
-// 초기 로드 시 로컬 스토리지에서 데이터 가져오기
-//let existingPressData = localStorage.getItem('mysubscribe');
-///subscribeManager.setSubscribedData(JSON.parse(existingPressData));
-
-
-//let subscribedNews = subscribeManager.getSubscribedData();
 
 //구독버튼 누르면 -> 구독하기
 export const subscribePress = (btntxt) => {
@@ -15,7 +8,6 @@ export const subscribePress = (btntxt) => {
     subscribeManager.setSubscribedData(JSON.parse(existingPressData));
     let subscribedNews = subscribeManager.getSubscribedData();
 
-    console.log(btntxt);
     if (!subscribedNews.includes(btntxt)){
         //데이터 추가
         subscribedNews.push(btntxt);
@@ -25,7 +17,7 @@ export const subscribePress = (btntxt) => {
         // 버튼 이미지 변경
         const button = document.querySelector(`.news-press-subscribe`);
         button.innerHTML = '<img src="../../icons/cancel.svg" alt="Subscribed">'; // 버튼 이미지 변경
-        showsubmodal();
+        showSubModal();
         mytabs();
     }
     else{
@@ -34,7 +26,6 @@ export const subscribePress = (btntxt) => {
         
 }
 
-//구독되었는지?
 export const showsubscribe = (btntext) => {
   let existingPressData = localStorage.getItem('mysubscribe');
   subscribeManager.setSubscribedData(JSON.parse(existingPressData));
@@ -47,7 +38,10 @@ export const showsubscribe = (btntext) => {
   }
   else{
     subscribeButton.innerHTML = '<img src="../../icons/Subscribe.svg" alt="Subscribe">';
+  
   }
+  subscribeButton.style.cursor = 'pointer';
+
 }
 
 //구독취소
@@ -57,6 +51,6 @@ export const cancelsubscribe = (btntext) => {
   let subscribedNews = subscribeManager.getSubscribedData();
 
   if (subscribedNews.includes(btntext)) {
-    showCancelmodal(btntext);
+    showCancelModal(btntext);
   }
 }
