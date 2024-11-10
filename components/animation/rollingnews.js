@@ -14,65 +14,57 @@ export const rightnews = [
     { name: "중앙일보", news: "정치, 경제, 사회 등 다양한 분야의 깊이 있는 뉴스를 제공합니다." }
 ];
 
-document.addEventListener('DOMContentLoaded', function () {
+let leftInterval, rightInterval;
+
+function updateTicker(ticker, index, newsArray) {
+    const press = ticker.querySelector('.press');
+    const article = ticker.querySelector('.rollarticle');
+
+    press.style.animation = 'slideOut 0.5s ease forwards';
+    article.style.animation = 'slideOut 0.5s ease forwards';
+
+    setTimeout(() => {
+        press.textContent = newsArray[index].name;
+        article.textContent = newsArray[index].news;
+
+        press.style.animation = 'slideIn 0.5s ease forwards';
+        article.style.animation = 'slideIn 0.5s ease forwards';
+    }, 200);
+}
+
+function startTickerInterval(ticker, index, newsArray) {
+    return setInterval(() => {
+        index = (index + 1) % newsArray.length;
+        updateTicker(ticker, index, newsArray);
+    }, 5000);
+}
+
+function mouseleaveing(ticker, index, newsArray) {
+    index = (index + 1) % newsArray.length;
+    updateTicker(ticker, index, newsArray);
+    return index;
+}
+
+export function initTicker(leftTicker, rightTicker) {
     let leftIndex = 0;
     let rightIndex = 0;
 
-    const leftTicker = document.getElementById('leftNews');
-    const rightTicker = document.getElementById('rightNews');
-
-    let leftInterval;
-    let rightInterval;
-
-    function updateTicker(ticker, index, newsArray) {
-        const press = ticker.querySelector('.press');
-        const article = ticker.querySelector('.rollarticle');
-
-        //기존 뉴스 - slideout
-        press.style.animation = 'slideOut 0.5s ease forwards';
-        article.style.animation = 'slideOut 0.5s ease forwards';
-        setTimeout(() => {
-            press.textContent = newsArray[index].name;
-            article.textContent = newsArray[index].news;
-
-            //새로운 뉴스 - slidein
-            press.style.animation = 'slideIn 0.5s ease forwards';
-            article.style.animation = 'slideIn 0.5s ease forwards';
-        }, 200);
-    }
-
-    function startTickerInterval(ticker, index, newsArray) {
-        return setInterval(() => {
-            index = (index + 1) % newsArray.length;
-            updateTicker(ticker, index, newsArray);
-        }, 5000); // 5초 간격
-    }
-
-    //마우스 떼면 바로 다음 기사 보이기
-    function mouseleaveing(ticker, index, newsArray) {
-        index = (index + 1) % newsArray.length;
-        updateTicker(ticker, index, newsArray);
-        return index;
-    }
-
     leftInterval = startTickerInterval(leftTicker, leftIndex, leftnews);
 
-    // 오른쪽 롤링바 - 1초 지연 후 시작
     setTimeout(() => {
         rightInterval = startTickerInterval(rightTicker, rightIndex, rightnews);
     }, 1000);
 
-    leftTicker.addEventListener('mouseenter', () =>
-        clearInterval(leftInterval));
+    leftTicker.addEventListener('mouseenter', () => clearInterval(leftInterval));
     leftTicker.addEventListener('mouseleave', () => {
         leftIndex = mouseleaveing(leftTicker, leftIndex, leftnews);
         leftInterval = startTickerInterval(leftTicker, leftIndex, leftnews);
     });
 
-    rightTicker.addEventListener('mouseenter', () =>
-        clearInterval(rightInterval));
+    rightTicker.addEventListener('mouseenter', () => clearInterval(rightInterval));
     rightTicker.addEventListener('mouseleave', () => {
         rightIndex = mouseleaveing(rightTicker, rightIndex, rightnews);
         rightInterval = startTickerInterval(rightTicker, rightIndex, rightnews);
     });
-});
+}
+

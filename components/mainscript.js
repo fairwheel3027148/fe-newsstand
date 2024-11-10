@@ -2,21 +2,20 @@ import { displayDate } from "./utils/date.js";
 import { subscribePress } from "./subscribe/subscribe.js";
 import { originaltabs,mytabs } from "./newstab/newstab.js";
 import { initmain } from "./displaynews/displayNews.js";
+import { initTicker } from "./animation/rollingnews.js";
 import stateManager from "./statemanager/stateManager.js";
 
-window.addEventListener('load', function() {
+const leftTicker = document.getElementById('leftNews');
+const rightTicker = document.getElementById('rightNews');
+
+window.addEventListener('load', () => {
   displayDate();
+  initTicker(leftTicker, rightTicker);
 });
 
-export function clickArt(checkbuttonId) {
-  const clicked = document.getElementById(checkbuttonId);
-
-  // Remove 'active' class from all buttons
-  document.querySelectorAll('.subs').forEach((btn) => {
-      btn.classList.remove('active-art');
-  });
-
-  clicked.classList.add('active-art');
+export const clickArt = (buttonId) => {
+  document.querySelectorAll('.subs').forEach(btn => btn.classList.remove('active-art'));
+  document.getElementById(buttonId).classList.add('active-art');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -35,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-//이벤트 위임 문제?
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.querySelector('.news-list-container');
     // 이벤트 위임 -  부모 요소에 이벤트 리스너 설정
