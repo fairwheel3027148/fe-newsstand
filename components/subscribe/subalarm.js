@@ -1,8 +1,8 @@
 import { mytabs } from "../newstab/newstab.js";
 import subscribeManager from "../statemanager/subscribeManager.js";
 import { subProgressTimer } from "../displaynews/displaySubscribe.js";
-import stateManager from "../statemanager/stateManager.js";
-export const showsubmodal = () => {
+
+export const showSubModal = () => {
     const modal = document.getElementById('submodal');
     modal.innerText = "내가 구독한 언론사에 추가되었습니다.";
     modal.className = 'active';
@@ -11,38 +11,56 @@ export const showsubmodal = () => {
     }, 5000);
 }
 
-// 모달 창 닫기 함수
 const closeModal = () => {
     const modalContainer = document.querySelector('.cancel-modal-container');
     modalContainer.classList.remove('show');
+    modalContainer.innerHTML = ''; 
 };
 
-//구독 취소 창
-export const showCancelmodal = (btn_text) => {
-    const modalContainer = document.querySelector('.cancel-modal-container');
+// 구독 취소 모달
+export const showCancelModal = (subscribedNews) => {
+
+    let modalContainer = document.querySelector('.cancel-modal-container');
+
+    if (!modalContainer) {
+        modalContainer = document.createElement('div');
+        modalContainer.classList.add('cancel-modal-container');
+        document.body.appendChild(modalContainer);  //body에 추가
+    }
+    
     modalContainer.classList.add('show');
-    const modalText = document.getElementById('cancel-modal-text');
-    modalText.textContent = `${btn_text}`;
+    
+    const modalContent = `
+        <div class="cancel-modal-content">
+            <p><span id="cancel-modal-text">${subscribedNews}</span>을(를) 구독해지하시겠습니까?</p>
+        </div>
+        <div class="cancel-modal-btn">
+            <div class="cancel-yes">예, 해지합니다.</div>
+            <div class="cancel-no">아니오</div>
+        </div>
+    `;
+    
+    modalContainer.innerHTML = modalContent;
+    
+    const cancelyes = modalContainer.querySelector('.cancel-yes');
+    const cancelno = modalContainer.querySelector('.cancel-no');
+
+    cancelyes.addEventListener('click', () => {
+        closeModal();
+
+        const subscribeButton = document.querySelector('.news-press-subscribe');
+        subscribeButton.innerHTML = '<img src="../../icons/Subscribe.svg" alt="Subscribe">';
+
+        subscribeManager.removeNews(subscribedNews);
+
+        // 로컬 스토리지에 업데이트된 데이터 저장
+        localStorage.setItem('mysubscribe', JSON.stringify(subscribeManager.getSubscribedData()));
+    
+        clearInterval(subProgressTimer);
+        mytabs();
+    });
+
+    cancelno.addEventListener('click', () => {
+        closeModal();
+    });
 };
-
-const cancelyes = document.querySelector('.cancel-yes');
-const cancelno = document.querySelector('.cancel-no');
-
-cancelyes.addEventListener('click', () => {
-    // 먼저 창닫기
-    closeModal();
-    let subscribedNews = subscribeManager.getSubscribedData();
-    let modaltext = document.getElementById('cancel-modal-text');
-    console.log(modaltext.textContent);
-    const subscribeButton = document.querySelector(`.news-press-subscribe`);
-    subscribeButton.innerHTML = '<img src="../../icons/Subscribe.svg" alt="Subscribe">';
-
-    let filteredNews = subscribedNews.filter(item => item !== modaltext.textContent);
-    subscribeManager.setSubscribedData(filteredNews);
-    console.log(subscribeManager.getSubscribedData());
-    localStorage.setItem('mysubscribe' , JSON.stringify(filteredNews));
-    clearInterval(subProgressTimer);
-    mytabs();
-});
-
-cancelno.addEventListener('click', closeModal);
